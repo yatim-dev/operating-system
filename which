@@ -1,0 +1,72 @@
+#!/bin/bash
+
+
+if [ "$1" = "-h" -o "$1" = "--help" -o "$1" = "" ]; then
+    echo ""
+    echo Copyright 2020 by Yarkov Timothy
+    echo ""
+    echo "$0 program - locate a command"
+    echo ""
+    echo $0 returns the pathname of the file which would be executed in the current environment.
+    echo It does this by searching the PATH for executable files matching the names of the arguments.
+    echo And looks for a file in the current directory.
+    echo ""
+    echo If you want to see help on the internal command, then pass as the second argument h
+    echo ""
+    echo FOR EXAMPLE:
+    echo $0 ls
+    echo $0 ping
+    echo $0 -h
+    echo $0 echo h
+    echo ""
+    echo "Script implemented by Yarkov Timothy	07 December 2020" 
+    echo ""
+    exit 0
+fi
+
+if [ $1 = "/*" ]; then
+    echo This is a directory
+    echo read help
+    echo write:
+    echo $0 -h or $0 --help 
+    exit 0
+fi
+
+IFS=:
+flag=0
+
+getCommand=`basename $1`
+
+
+for path in $PATH; do
+    if [ -x "$path/$1" ]; then
+        flag=1
+        echo "$path"/"$getCommand"
+    fi
+done
+
+if [ -e "$PWD"/"$1" ]; then
+     echo "$PWD"/"$getCommand"
+     exit 0
+fi
+
+
+if [ $flag = 0 ]; then
+    echo command \"$1\" not found
+    exit 0
+fi
+
+type=`type $1`
+
+if [ "$type" = ""$1" is a shell builtin" ]; then
+    echo "$1:"
+    echo This is internal command
+    if [ "$2" = "h" ]; then
+        echo ""
+        help $1
+        echo ""
+    fi
+else
+    echo "$1:"
+    echo This is external command
+fi
